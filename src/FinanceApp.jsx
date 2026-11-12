@@ -229,7 +229,10 @@ export default function FinanceApp({ session, onSignedOut }) {
       return;
     }
     run(() => supabase.auth.resetPasswordForEmail(session.user.email, {
-      redirectTo: `${window.location.origin}/?mode=update-password`,
+      redirectTo: new URL(
+        "?mode=update-password",
+        new URL(import.meta.env.BASE_URL, window.location.href),
+      ).toString(),
     }).then(assertResult), "أرسلنا رابط تغيير كلمة المرور إلى بريدك الإلكتروني.");
   };
 

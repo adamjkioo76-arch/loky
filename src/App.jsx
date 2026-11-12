@@ -130,7 +130,10 @@ function App() {
         }
       } else if (screen === "forgot") {
         result = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${window.location.origin}/?mode=update-password`,
+          redirectTo: new URL(
+            "?mode=update-password",
+            new URL(import.meta.env.BASE_URL, window.location.href),
+          ).toString(),
         });
         if (!result.error) {
           setNotice({ type: "success", text: "إذا كان البريد مسجلاً، سيصلك رابط إعادة التعيين قريباً." });
@@ -168,7 +171,7 @@ function App() {
       <div className="ambient ambient-one" />
       <div className="ambient ambient-two" />
       <header className="topbar">
-        <a className="brand" href="/" aria-label="LUMORA الرئيسية">
+        <a className="brand" href={import.meta.env.BASE_URL} aria-label="LUMORA الرئيسية">
           <WolfMark small />
           <span>LUMORA</span>
         </a>

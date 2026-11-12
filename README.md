@@ -65,6 +65,8 @@ npm run preview
 
 انشر محتوى `dist/` على استضافة تدعم تطبيقات Vite الثابتة، وأضف عنوان النشر إلى Redirect URLs في Supabase. أعد بناء التطبيق بعد إضافة إعدادات Supabase في `config.js`. لا تضع مفاتيح خاصة في ملفات الواجهة أو ملفات ZIP.
 
+للنشر على GitHub Pages، غيّر `Settings > Pages > Source` إلى `GitHub Actions`. يقوم ملف `.github/workflows/deploy-pages.yml` ببناء التطبيق ونشر محتوى `dist/` تلقائياً عند الدفع إلى `main`.
+
 ## الاختبارات
 
 - اختبارات Vitest للحسابات المالية بوحدات العملة الصغرى.
