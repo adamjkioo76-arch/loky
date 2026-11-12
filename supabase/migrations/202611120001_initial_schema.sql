@@ -285,7 +285,7 @@ begin
   select kind into v_category_kind from public.categories
   where id = new.category_id and user_id = new.user_id;
   if not found then raise exception 'category not found'; end if;
-  if v_category_kind <> case when new.kind = 'income' then 'income' else 'expense' end then
+  if (v_category_kind = 'income') <> (new.kind = 'income') then
     raise exception 'category type does not match transaction type';
   end if;
   return new;
