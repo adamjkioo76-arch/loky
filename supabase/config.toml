@@ -1,0 +1,4 @@
+project_id = "lumora"
+
+[functions.lumora-ai]
+verify_jwt = true
