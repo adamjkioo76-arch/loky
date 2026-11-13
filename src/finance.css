@@ -15,6 +15,9 @@
   display: flex;
   direction: rtl;
   font-family: "IBM Plex Sans Arabic", "Tahoma", system-ui, sans-serif;
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
 }
 .finance-shell.light-theme {
   --surface: #fff;
@@ -57,6 +60,7 @@
 .top-avatar { width: 31px; height: 31px; flex-basis: 31px; }
 .content-area { width: min(100%, 1490px); margin: 0 auto; padding: 27px clamp(22px, 4vw, 56px) 55px; }
 .mobile-menu-button { display: none; }
+.mobile-menu-backdrop { display: none; }
 .welcome-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
 .welcome-row h1, .section-title-row h1 { margin: 0; font-size: 21px; letter-spacing: -.3px; }
 .welcome-row p, .section-title-row p { margin: 5px 0 0; color: var(--muted); font-size: 11px; }
@@ -271,8 +275,9 @@ td:nth-last-child(2) { font: 500 10px "DM Sans", sans-serif; }
   .dashboard-grid { grid-template-columns: minmax(0, 1.3fr) minmax(230px, .9fr); }
 }
 @media (max-width: 800px) {
-  .side-nav { position: fixed; right: 0; top: 0; transform: translateX(105%); width: 260px; height: 100dvh; transition: transform .22s ease; box-shadow: -20px 0 45px #0005; }
-  .side-nav.open { transform: translateX(0); }
+  .side-nav { position: fixed; right: 0; top: 0; transform: translateX(105%); width: min(260px, 86vw); height: 100vh; height: 100dvh; visibility: hidden; transition: transform .22s ease, visibility 0s linear .22s; box-shadow: -20px 0 45px #0005; }
+  .side-nav.open { transform: translateX(0); visibility: visible; transition: transform .22s ease, visibility 0s; }
+  .mobile-menu-backdrop { position: fixed; inset: 0; z-index: 19; display: block; border: 0; background: rgba(4,4,8,.58); }
   .finance-main { width: 100%; }
   .mobile-menu-button { display: inline-grid; }
   .finance-topbar { justify-content: flex-start; gap: 12px; padding-inline: 20px; }

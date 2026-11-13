@@ -147,6 +147,15 @@ export default function FinanceApp({ session, onSignedOut }) {
     return () => { activeEffect = false; };
   }, [loadData]);
 
+  useEffect(() => {
+    if (!mobileMenu) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setMobileMenu(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [mobileMenu]);
+
   const run = async (operation, successText = "") => {
     setBusy(true);
     setError("");
@@ -271,7 +280,7 @@ export default function FinanceApp({ session, onSignedOut }) {
 
   return (
     <div className={`finance-shell ${data.preferences?.theme === "light" ? "light-theme" : ""}`}>
-      <aside className={`side-nav ${mobileMenu ? "open" : ""}`}>
+      <aside id="finance-navigation" className={`side-nav ${mobileMenu ? "open" : ""}`} aria-label="التنقل الرئيسي">
         <div className="finance-brand"><span className="brand-emblem">L</span><strong>LUMORA</strong></div>
         <div className="nav-label">القائمة الرئيسية</div>
         <nav>
@@ -289,10 +298,11 @@ export default function FinanceApp({ session, onSignedOut }) {
           <button className="icon-button" title="تسجيل الخروج" onClick={signOut} disabled={busy}><LogOut size={17} /></button>
         </div>
       </aside>
+      {mobileMenu && <button className="mobile-menu-backdrop" type="button" onClick={() => setMobileMenu(false)} aria-label="إغلاق القائمة" />}
 
       <main className="finance-main">
         <header className="finance-topbar">
-          <button className="mobile-menu-button icon-button" onClick={() => setMobileMenu((open) => !open)} aria-label="القائمة"><Menu size={21} /></button>
+          <button className="mobile-menu-button icon-button" onClick={() => setMobileMenu((open) => !open)} aria-label="القائمة" aria-controls="finance-navigation" aria-expanded={mobileMenu}><Menu size={21} /></button>
           <div><div className="topbar-title">{pageTitles[active]}</div><div className="topbar-subtitle">أموالك بذكاء، لحياة أفضل</div></div>
           <div className="topbar-actions">
             <span className="online-indicator"><i /> متصل</span>
