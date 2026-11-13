@@ -1,7 +1,6 @@
-
 name: Import and Deploy LUMORA
 
-on:
+'on':
   workflow_dispatch:
 
 permissions:
