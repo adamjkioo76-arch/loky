@@ -18,6 +18,15 @@ test("user can navigate between sign in, sign up, and password recovery", async 
   await expect(page.getByRole("heading", { name: "نسيت كلمة المرور؟" })).toBeVisible();
 });
 
+test("expired email links show a clear message and remove the stale callback hash", async ({ page }) => {
+  await page.goto("/#error=access_denied&error_code=otp_expired&error_description=Email+link+has+expired", {
+    waitUntil: "domcontentloaded",
+  });
+
+  await expect(page.getByRole("status")).toContainText("انتهت صلاحية رابط البريد");
+  await expect(page).toHaveURL("/");
+});
+
 test("auth screen fits common mobile, tablet, and desktop widths", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
 

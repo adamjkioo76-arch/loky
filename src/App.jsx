@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -35,6 +35,39 @@ function WolfMark({ small = false }) {
   );
 }
 
+class FinanceErrorBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    console.error("Finance dashboard render failed:", error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <main className="page-shell" role="alert">
+          <section className="form-panel">
+            <div className="form-heading">
+              <div className="form-kicker">حدث خطأ</div>
+              <h2>تعذّر فتح لوحة الحسابات</h2>
+              <p>أعد تحميل الصفحة للمحاولة مجدداً.</p>
+            </div>
+            <button className="submit-button" type="button" onClick={() => window.location.reload()}>
+              إعادة المحاولة
+            </button>
+          </section>
+        </main>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   const [screen, setScreen] = useState(() =>
     new URLSearchParams(window.location.search).get("mode") === "update-password"
@@ -51,6 +84,15 @@ function App() {
   const [session, setSession] = useState(null);
 
   useEffect(() => {
+    const hash = new URLSearchParams(window.location.hash.slice(1));
+    const authErrorCode = hash.get("error_code");
+    if (authErrorCode) {
+      setNotice({ type: "error", text: authCallbackError(authErrorCode) });
+      const url = new URL(window.location.href);
+      url.hash = "";
+      window.history.replaceState({}, "", url);
+    }
+
     if (!supabase) return undefined;
     supabase.auth.getSession().then(({ data, error }) => {
       if (error) {
@@ -58,6 +100,8 @@ function App() {
         return;
       }
       setSession(data.session);
+    }).catch((error) => {
+      setNotice({ type: "error", text: friendlyError(error?.message) });
     });
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
@@ -163,7 +207,11 @@ function App() {
   const copy = screens[screen];
 
   if (session) {
-    return <FinanceApp session={session} onSignedOut={() => setSession(null)} />;
+    return (
+      <FinanceErrorBoundary>
+        <FinanceApp session={session} onSignedOut={() => setSession(null)} />
+      </FinanceErrorBoundary>
+    );
   }
 
   return (
@@ -321,6 +369,14 @@ function buttonText(screen) {
   if (screen === "signup") return "إنشاء الحساب";
   if (screen === "forgot") return "إرسال رابط الاستعادة";
   return "تحديث كلمة المرور";
+}
+
+function authCallbackError(code) {
+  if (code === "otp_expired") {
+    return "انتهت صلاحية رابط البريد أو سبق استخدامه. افتح الموقع مباشرة وسجّل الدخول، ولا تستخدم الرابط القديم.";
+  }
+  if (code === "access_denied") return "تعذّر التحقق من رابط البريد. افتح الموقع وحاول تسجيل الدخول مجدداً.";
+  return "تعذّر إكمال التحقق. افتح الموقع وحاول مرة أخرى.";
 }
 
 function friendlyError(message = "") {
